@@ -127,11 +127,11 @@
 }
 
 // 创建一个指定区域大小的view
-+ (UIView *)createView:(const CGRect *)rect
++ (UIView *)createView:(CGRect)rect
 {
 	UIView *view = UI_ALLOC_CREATE(UIView, 
-								   rect->origin.x, rect->origin.y, 
-								   rect->size.width, rect->size.height);
+								   rect.origin.x, rect.origin.y, 
+								   rect.size.width, rect.size.height);
 	return [view autorelease];
 }
 
@@ -145,7 +145,7 @@
 }
 
 // 创建一个指定区域大小的透明view
-+ (UIView *)createTransparentView:(const CGRect *)rect
++ (UIView *)createTransparentView:(CGRect)rect
 {
 	UIView *view = [self createView:rect];
 	if(!view)
@@ -238,6 +238,7 @@
 		[view getSubViewIsMemberOf:viewStr array:outArray];
 	}
 }
+
 
 // not ok
 - (void)commonFlip
@@ -363,5 +364,158 @@
 {
 	return [self.subviews objectAtIndex:index];
 }
+
+// get the first subview
+- (UIView *)getFirstSubview
+{
+	if([self.subviews count])
+		return [self.subviews objectAtIndex:0];
+	return nil;
+}
+
+// get the last subview
+- (UIView *)getLastSubview
+{
+	if([self.subviews count])
+		return [self.subviews objectAtIndex:[self.subviews count] - 1];
+	return nil;
+}
+
+// add a layer by rect and color
+- (CALayer *)addLayer:(CGRect)rect color:(UIColor *)color
+{
+	CALayer *layer = [CALayer layer];
+	layer.backgroundColor = color.CGColor;
+	layer.frame = rect;
+	[self.layer addSublayer:layer];
+	return layer;
+}
+
+// get the same level views arr that are behind self
+- (NSArray *)getBackwardsViews
+{
+	UIView *superView = self.superview;
+	NSArray *arr = superView.subviews;
+	NSMutableArray *retArr = [NSMutableArray array];
+	
+	BOOL canAdd = FALSE;
+	for(UIView *view in arr)
+	{
+		if(canAdd)
+			[retArr addObject:view];
+		if(self == view)
+			canAdd = TRUE;
+	}
+	return retArr;
+}
+
+// get the same level views arr that are in front of self
+- (NSArray *)getForewardsViews
+{
+	UIView *superView = self.superview;
+	NSArray *arr = superView.subviews;
+	NSMutableArray *retArr = [NSMutableArray array];
+	
+	BOOL canAdd = TRUE;
+	for(UIView *view in arr)
+	{
+		if(self == view)
+			canAdd = FALSE;
+		if(canAdd)
+			[retArr addObject:view];
+	}
+	return retArr;
+}
+
+// returns whether the touch is inside the view or not
+- (BOOL)isTouchInsideView:(UITouch *)touch
+{
+	return [self pointInside:[touch locationInView:self] withEvent:nil];
+}
+
+// returns whether the touch is outside the view or not
+- (BOOL)isTouchOutsideView:(UITouch *)touch
+{
+	return ![self pointInside:[touch locationInView:self] withEvent:nil];
+}
+
+// returns whether the touch hit the view
+- (BOOL)hitView:(UIView *)view touch:(UITouch *)touch
+{
+	return ([self hitTest:[touch locationInView:self] withEvent:nil] == view);
+}
+
+// returns whether the touch hit the self
+- (BOOL)hitSelf:(UITouch *)touch
+{
+	return ([self hitTest:[touch locationInView:self] withEvent:nil] == self);
+}
+
+// returns whether the touch hit the view's subview
+- (BOOL)hitSubviews:(UITouch *)touch
+{
+	UIView *view = [self hitTest:[touch locationInView:self] withEvent:nil];
+	return (view != nil && view != self);
+}
+
+// remove subviews that is member of viewStr class
+- (void)removeSubViewIsMemberOf:(NSString *)viewStr
+{
+	for(UIView *view in self.subviews)
+	{
+		if([view isMemberOfClass:NSClassFromString(viewStr)])
+			[view removeFromSuperview];
+	}
+}
+
+// remove subviews that is kind of viewStr class
+- (void)removeSubViewIsKindOf:(NSString *)viewStr
+{
+	for(UIView *view in self.subviews)
+	{
+		if([view isKindOfClass:NSClassFromString(viewStr)])
+			[view removeFromSuperview];
+	}
+}
+
+// recursively remove subviews that is member of viewStr class
+- (void)removeRecursiveSubViewIsMemberOf:(NSString *)viewStr
+{
+	for(UIView *view in self.subviews)
+	{
+		if([view isMemberOfClass:NSClassFromString(viewStr)])
+		{
+			[view removeFromSuperview];
+			continue;
+		}
+		[view removeRecursiveSubViewIsMemberOf:viewStr];
+	}
+}
+
+// recursively remove subviews that is kind of viewStr class
+- (void)removeRecursiveSubViewIsKindOf:(NSString *)viewStr
+{
+	for(UIView *view in self.subviews)
+	{
+		if([view isKindOfClass:NSClassFromString(viewStr)])
+		{
+			[view removeFromSuperview];
+			continue;
+		}
+		[view removeRecursiveSubViewIsKindOf:viewStr];
+	}
+}
+
+// set the view that it will show the view outside the frame or not
+- (void)showOutsideFrameView
+{
+	self.clipsToBounds = NO;
+}
+
+- (void)hideOutsideFrameView
+{
+	self.clipsToBounds = YES;
+}
+
 
 @end

@@ -7,13 +7,22 @@
 //
 
 #import <UIKit/UIKit.h>
+#import <MapKit/MapKit.h>
+#import <MapKit/MKAnnotation.h>
+#import "CCMapAnnotation.h"
 
 @interface RootViewController : UITableViewController 
+							<CLLocationManagerDelegate, MKMapViewDelegate,
+							UITableViewDelegate, UITableViewDataSource>
 {
 	IBOutlet	UITableView			*_tableView;
 	
 	UIWebView						*_webView;
 	UISearchBar						*_searchBar;
+	
+	MKMapView						*_map;
+	CLLocationManager				*_locManager;
+	CLLocationCoordinate2D			_loc;
 }
 
 @property(nonatomic, retain)	IBOutlet UITableView			*_tableView;

@@ -60,6 +60,17 @@
 // returns whether the string is in strArr(whether the strArr contains at least one string that is equalToString self)
 - (BOOL)stringInArr:(NSArray *)strArr;
 
+// create a string that comes from an int value
++ (id)stringWithInt:(int)n;
+
+// create a string that comes from an double value
++ (id)stringWithDouble:(double)d;
+
+// read GB2312 format file to NSString
++ (id)stringWithGB2312File:(NSString *)fileFullPath;
+
+// read GB18030 format file to NSString
++ (id)stringWithGB18030File:(NSString *)fileFullPath;
 
 @end
 

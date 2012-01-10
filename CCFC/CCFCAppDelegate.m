@@ -51,6 +51,16 @@
 #import "CCUISlider.h"
 #import "CCCamera.h"
 #import "CCNSDate.h"
+#import "CCFuntion.h"
+#import "CCLanguage.h"
+#import "CCUIApplication.h"
+#import "CCFormat.h"
+#import "CCCreater.h"
+#import "CCSound.h"
+#import "CCPopoverController.h"
+#import "CCIPodPlayer.h"
+#import "CCMPMediaItem.h"
+#import "CCLyricsParser.h"
 
 void uncaughtExceptionHandler(NSException *exception) 
 {
@@ -172,6 +182,28 @@ totalBytesExpectedToWrite:(NSInteger)totalBytesExpectedToWrite NS_AVAILABLE(10_6
 	LOG_DOUBLE(slider.value);
 }
 
+#pragma mark CCSound delegate
+- (void)onVolumeChanged:(NSNotification *)noti
+{
+	LOG_ENTER_FUNC(onVolumeChanged);
+	MPMusicPlayerController *player = (MPMusicPlayerController *)noti.object;
+	LOG_DOUBLE([player volume]);
+}
+
+#pragma mark onGetCurrPlayTime
+- (void)onGetCurrPlayTime:(NSTimer *)timer
+{
+	MPMusicPlayerController *ipodPlayer = [CCIPodPlayer iPodPlayer];
+	float currPlayTime = [ipodPlayer currentPlaybackTime];
+	LOG_DOUBLE(currPlayTime);
+}
+
+#pragma mark onLongPress
+- (void)onLongPress:(id)sender
+{
+	LOG_ENTER_FUNC(onLongPress);
+}
+
 #pragma mark btnClickDelegate
 - (void)onBtnClick:(id)sender
 {
@@ -217,10 +249,15 @@ totalBytesExpectedToWrite:(NSInteger)totalBytesExpectedToWrite NS_AVAILABLE(10_6
 #pragma mark CCUITextField
 	// test CCUITextField
 	// test addClearButton  // ok
-	//UITextField *textField = [UITextField createCommonTextField:
-//							  CGRectMake(20, 160, 200, 40)];
+//	UITextField *textField = [UITextField createCommonTextField:
+//							  CGRectMake(20, 160, 200, 30)];
 //	[textField addClearButton];
 //	[self.navigationController.view addSubview:textField];
+	
+	// leftView	// ok
+//	CGRect rect = CGRectMake(0, 0, 40, 30);
+//	[textField addLeftview:rect text:@"Info:"];
+	
 	
 #pragma mark CCKeyboard
 	// test getKeyboardView getKeyboardViewName	// ok
@@ -283,7 +320,71 @@ totalBytesExpectedToWrite:(NSInteger)totalBytesExpectedToWrite NS_AVAILABLE(10_6
 //	CFAbsoluteTime myCurrentTime = CFAbsoluteTimeGetCurrent();
 //	LOG_DOUBLE(myCurrentTime);
 	
+	
+#pragma mark CCUIView
+	// test getBackwardsViews  getForewardsViews	// ok
+//	LOG_ARR(self.navigationController.view.subviews);
+//	LOG_ARR([btn getBackwardsViews]);
+//	LOG_ARR([btn getForewardsViews]);
+	
+#pragma mark UIApplication
+	// test audio-player-event://		// not ok
+#if 0	// audio-player-event:// // not ok
+	[UIApplication openUrl:@"audio-player-event://?uicmd=show-purchased-playlist"];
+#endif
+	
+	
+#pragma mark CCCAudio
+	// test getCurrentRoute	// ok
+//	LOG_STR([CCAudio getCurrentRoute]);
+	
+#pragma mark CCSound
+	// test addVolumeChangeObserver	// ok
+//	[CCSound addVolumeChangeObserver:self sel:@selector(onVolumeChanged:)];
+	
+#pragma mark UIPopoverController
+	// test UIPopoverController		// ok, UIPopoverController can't be used in iphone, can only in ipad
+//	[_popoverController presentPopoverFromBarButtonItem:btn 
+//							  permittedArrowDirections:UIPopoverArrowDirectionAny 
+//											  animated:YES];  
+	
+#pragma mark CCIPodPlayer
+	// test MPMediaItem info // ok
+//	MPMediaItem *item = [CCIPodPlayer currentPlayingItem];
+//	LOG_ID(item);
+//	LOG_ID([item valueForKey:MPMediaItemPropertyTitle]);
+//	LOG_ID([item valueForKey:MPMediaItemPropertyArtist]);
+//	LOG_ID([item valueForKey:MPMediaItemPropertyAlbumTitle]);
 
+//	// LOG_ID([item valueForKey:MPMediaItemPropertyLyrics]);	// crash
+	
+	// test iPodPlayer currentPlaybackTime every 0.2 second	// ok
+//	[NSTimer scheduledTimerWithTimeInterval:0.2f
+//									 target:self
+//								   selector:@selector(onGetCurrPlayTime:) 
+//								   userInfo:nil 
+//									repeats:YES];
+//	MPMusicPlayerController *ipodPlayer = [CCIPodPlayer iPodPlayer];
+//	float currPlayTime = [ipodPlayer currentPlaybackTime];
+//	LOG_DOUBLE(currPlayTime);
+	
+#pragma mark CCMPMediaItem
+	// test CCMPMediaItem	// not ok
+//	MPMediaItem *item = [CCIPodPlayer currentPlayingItem];
+//	//LOG_STR([item getTitle]);
+//	//LOG_STR([item getArtist]);
+//	//LOG_STR([item getAlbumTitle]);
+	
+#pragma mark CCLyricsParser
+	// test	// ok
+//	NSString *file = [CCFileUtil getFileFullPathInBundlePath:@"凤凰传奇 - 荷塘月色.lrc"];
+//	CCLyricsParser *parser = [[CCLyricsParser alloc] initWithLyricsPath:file];
+//	[parser parse];
+//	LOG_STR([parser title]);
+//	LOG_STR([parser artist]);
+//	LOG_STR([parser album]);
+//	LOG_STR([parser lyricsArr]);
+//	[parser release];
 }
 
 #pragma mark application delegate
@@ -301,10 +402,10 @@ totalBytesExpectedToWrite:(NSInteger)totalBytesExpectedToWrite NS_AVAILABLE(10_6
 	[self.navigationController.view addSubview:btn];
 	
 	// add a textView
-	UITextView *textView = [UITextView createCommonTextView:CGRectMake(0, 60, 200, 40)
-												   withText:@""];
-	textView.editable = TRUE;
-	[self.navigationController.view addSubview:textView];
+//	UITextView *textView = [UITextView createCommonTextView:CGRectMake(0, 60, 200, 40)
+//												   withText:@""];
+//	textView.editable = TRUE;
+//	[self.navigationController.view addSubview:textView];
 	
 #pragma mark add uncaughtExceptionHandler
 	// NSSetUncaughtExceptionHandler(&uncaughtExceptionHandler);
@@ -321,16 +422,19 @@ totalBytesExpectedToWrite:(NSInteger)totalBytesExpectedToWrite NS_AVAILABLE(10_6
     
 #pragma mark CCAddressBook
     // test CCAddressBook	// ok
-    /*
-    CCAddressBook *ab = [CCAddressBook new];
-    for(int i = 0; i < [ab getABRecordCount]; ++i)
-    {
-        NSLog(@"getCompositeNameByIndex %d is %@", i, [ab getCompositeNameByIndex:i]);
-        NSLog(@"getPhoneNumberArrByIndex %d is %@", i, [ab getPhoneNumberArrByIndex:i]);
-        NSLog(@"getFullNameByIndex %d is %@", i, [ab getFullNameByIndex:i]);
-    }
-    [ab release];
-     */
+
+//    CCAddressBook *ab = [CCAddressBook new];
+//    for(int i = 0; i < [ab getABRecordCount]; ++i)
+//    {
+//        NSLog(@"getCompositeNameByIndex %d is %@", i, [ab getCompositeNameByIndex:i]);
+//        NSLog(@"getPhoneNumberArrByIndex %d is %@", i, [ab getPhoneNumberArrByIndex:i]);
+//        NSLog(@"getFullNameByIndex %d is %@", i, [ab getFullNameByIndex:i]);
+//		ABRecordRef record = [ab getABRecordRefByIndex:i];
+//		// LOG_STR([CCAddressBook getFirstNamePhonetic:record]);	// not ok
+//		// LOG_STR([CCAddressBook getLastNamePhonetic:record]);	// not ok
+//    }
+//    [ab release];
+
     
 #pragma mark CCNSString
     // test CCNSString	// ok
@@ -394,7 +498,30 @@ totalBytesExpectedToWrite:(NSInteger)totalBytesExpectedToWrite NS_AVAILABLE(10_6
 //	LOG_STR(finalString);
 //	LOG_STR(oriString);
 	
+	// test UrlEncode	// not known
+//	NSString *str = @"http://www.ccteam.com/陈曦website";
+//	NSString *urlencodeStr = [CCEncoding UrlEncode:str];	// not known
+//	LOG_STR(urlencodeStr);
+//	
+//	NSData *data = [str dataUsingEncoding:NSUTF8StringEncoding];
+//	char *dest = [CCCreater callocBuffer:MACRO_SMALL_BUFFER];
+//	[data URLEncode:dest len:MACRO_SMALL_BUFFER];
+//	LOG_CSTR(dest);
+//	
+//	if(!strcmp(dest, [urlencodeStr UTF8String]))
+//		LOG("OK");
+//	else 
+//		LOG("Failed");
+//	
+//	free(dest);
 	
+	NSString *str = @"荷塘";
+	const char *cStr = [CCEncoding UnicodeToGB18030:str];
+	for(int i = 0; i < strlen(cStr); ++i)
+	{
+		LOG_INT((unsigned char)cStr[i]);
+		printf("%x\n", (unsigned char)cStr[i]);
+	}
 	
 #pragma mark CCNSData
 	// test CCNSData		// ok
@@ -706,8 +833,8 @@ totalBytesExpectedToWrite:(NSInteger)totalBytesExpectedToWrite NS_AVAILABLE(10_6
 	*/
 	
 	// test getCarrierCode	// ok
-	LOG_STR([CCPhone getCarrierCode]);
-	LOG_STR([CCPhone getSIMCarrierName:[CCPhone getCarrierCode]]);
+//	LOG_STR([CCPhone getCarrierCode]);
+//	LOG_STR([CCPhone getSIMCarrierName:[CCPhone getCarrierCode]]);
 	
 #pragma mark CCUIDevice
 	// test CCUIDevice	
@@ -715,6 +842,12 @@ totalBytesExpectedToWrite:(NSInteger)totalBytesExpectedToWrite NS_AVAILABLE(10_6
 	/*
 	LOG_STR([UIDevice buildVersion]);
 	*/
+	
+	// test deviceVersion	// ok
+//	LOG_STR([UIDevice deviceVersion]);
+	
+	// test imei	// not ok
+//	LOG_STR([UIDevice getImei]);
 	
 #pragma mark CCPhoto
 	// test CCPhoto	
@@ -771,6 +904,16 @@ totalBytesExpectedToWrite:(NSInteger)totalBytesExpectedToWrite NS_AVAILABLE(10_6
 	[img saveImgToPhotosAlbum];
 	*/
 	
+	// imageFromText	// ok
+//	UIImage *img = [UIImage imageFromText:@"xichen" font:[UIFont systemFontOfSize:16.0f]];
+//	LOG_ID(img);
+//	UIImageView *imgView = [[UIImageView alloc] initWithImage:img];
+//	imgView.frame = CGRectMake(40, 40, 50, 30);
+//	[self.navigationController.view addSubview:imgView];
+//	[imgView release];
+	
+	
+	
 #pragma mark CCNSArray
 	// test CCNSArray
 	// ok
@@ -782,6 +925,12 @@ totalBytesExpectedToWrite:(NSInteger)totalBytesExpectedToWrite NS_AVAILABLE(10_6
 	[arr addObject:@"xuchen"];
 	LOG_ARR(arr);
 	 */
+	
+	// test deepCopy	// not  ok
+//	NSArray *arr = [NSArray arrayWithObjects:@"1", @"2", @"3", nil];
+//	[arr printAllElementAddr];
+//	NSArray *deepcopyArr = [arr deepCopy];
+//	[deepcopyArr printAllElementAddr];
 	
 #pragma mark CCNSTimeZone
 	// test CCNSTimeZone
@@ -836,6 +985,50 @@ totalBytesExpectedToWrite:(NSInteger)totalBytesExpectedToWrite NS_AVAILABLE(10_6
 //	NSString *str1 = @"陈曦";
 //	LOG_BOOL([NSPredicate isChineseChar:str]);
 //	LOG_BOOL([NSPredicate isChineseChar:str1]);
+	
+#pragma mark CCFuntion
+	// test isFuntionExist	// ok
+//	LOG_BOOL([CCFuntion isFuntionExist:UIGraphicsBeginPDFContextToFile]);
+
+	
+#pragma mark CCLanguage
+	// test getAllLanguages	// ok
+//	LOG_ARR([CCLanguage getAllLanguages]);
+
+#pragma mark CCFormat
+	// test format	// ok
+//	NSLog(@"%zu", INT_MAX + 1);
+//	NSLog(@"%d", INT_MAX + 1);
+	
+#pragma mark CCCreater
+	// test ok
+//	LOG_ARR([CCCreater arrayWithSimpleNSString:12]);
+//	LOG_ARR([CCCreater arrayWithSimpleNSString:-3 size:8]);
+//	for(int i = 0; i < 20; ++i)
+//	{
+//		LOG_INT([CCCreater int]);
+//		LOG_INT([CCCreater smallint]);
+//		LOG_INT([CCCreater smalluint]);
+//		LOG_INT([CCCreater intLessTo:34]);
+//	}
+	
+#pragma mark CCPopoverController
+	// test CCPopoverController	// ok, UIPopoverController can't be used in iphone, can only in ipad
+//	CCPopoverController *pop = [CCPopoverController new];
+//	pop.contentSizeForViewInPopover = CGSizeMake(200, 300);   
+//	_popoverController = [[UIPopoverController alloc] initWithContentViewController:pop]; 
+//	[pop release];
+	
+#pragma mark UIStatusBar addTarget
+	// test	statusBar	// ok
+//	UIView *statusBar = [[UIApplication sharedApplication] statusBar];
+//	LOG_ID(statusBar);
+	
+	// not ok
+//	UILongPressGestureRecognizer *longPressGes = [[UILongPressGestureRecognizer alloc]
+//												  initWithTarget:self action:@selector(onLongPress:)];
+//	[statusBar addGestureRecognizer:longPressGes];
+//	[longPressGes release];
 	
 #pragma mark TestEnd
 	
@@ -892,6 +1085,8 @@ totalBytesExpectedToWrite:(NSInteger)totalBytesExpectedToWrite NS_AVAILABLE(10_6
 	[_player release];
 	[_recorder stop];
 	[_recorder release];
+	
+	[_popoverController release];
 	
     [super dealloc];
 }

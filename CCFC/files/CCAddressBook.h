@@ -11,8 +11,9 @@
 
 @interface CCAddressBook : NSObject 
 {
-    NSArray         *_abAllPeople;
-    NSArray         *_abGroups;
+	ABAddressBookRef	_addressBook;
+    NSArray				*_abAllPeople;
+    NSArray				*_abGroups;
 }
 
 - (id)init;
@@ -31,5 +32,14 @@
 
 // 根据index获取联系人姓名全称
 - (NSString *)getFullNameByIndex:(int)index;
+
+// get the person photo img data
+- (NSData *)getPersonPhotoImgData:(ABRecordRef)record;
+
+// get the first name phonetic str	// not ok
++ (NSString *)getFirstNamePhonetic:(ABRecordRef)record;
+
+// get the last name phonetic str	// not ok
++ (NSString *)getLastNamePhonetic:(ABRecordRef)record;
 
 @end

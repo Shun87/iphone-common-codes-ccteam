@@ -82,13 +82,13 @@
 - (void)hideAllSubViews;
 
 // 创建一个指定区域大小的view
-+ (UIView *)createView:(const CGRect *)rect;
++ (UIView *)createView:(CGRect)rect;
 
 // 创建一个和指定view相同大小的view
 + (UIView *)createViewByView:(UIView *)view;
 
 // 创建一个指定区域大小的透明view
-+ (UIView *)createTransparentView:(const CGRect *)rect;
++ (UIView *)createTransparentView:(CGRect)rect;
 
 // 创建一个和指定view相同大小的透明view
 + (UIView *)createTransparentViewByView:(UIView *)view;
@@ -155,6 +155,47 @@
 // get the UIView that is at the index of subviews
 - (UIView *)getSubviewByIndex:(int)index;
 
+// get the first subview
+- (UIView *)getFirstSubview;
+
+// get the last subview
+- (UIView *)getLastSubview;
+
+
+// add a layer by rect and color
+- (CALayer *)addLayer:(CGRect)rect color:(UIColor *)color;
+
+// get the same level views arr that are behind self
+- (NSArray *)getBackwardsViews;
+
+// get the same level views arr that are in front of self
+- (NSArray *)getForewardsViews;
+
+// returns whether the touch is inside the view or not
+- (BOOL)isTouchInsideView:(UITouch *)touch;
+
+// returns whether the touch is outside the view or not
+- (BOOL)isTouchOutsideView:(UITouch *)touch;
+
+// returns whether the touch hit the view
+- (BOOL)hitView:(UIView *)view touch:(UITouch *)touch;
+// returns whether the touch hit the self
+- (BOOL)hitSelf:(UITouch *)touch;
+// returns whether the touch hit the view's subview
+- (BOOL)hitSubviews:(UITouch *)touch;
+
+// remove subviews that is member of viewStr class
+- (void)removeSubViewIsMemberOf:(NSString *)viewStr;
+// remove subviews that is kind of viewStr class
+- (void)removeSubViewIsKindOf:(NSString *)viewStr;
+// recursively remove subviews that is member of viewStr class
+- (void)removeRecursiveSubViewIsMemberOf:(NSString *)viewStr;
+// recursively remove subviews that is kind of viewStr class
+- (void)removeRecursiveSubViewIsKindOf:(NSString *)viewStr;
+
+// set the view that it will show the view outside the frame or not
+- (void)showOutsideFrameView;
+- (void)hideOutsideFrameView;
 
 #if CC_ENABLE_PRIVATE_API && CC_COMPILE_PRIVATE_CLASS
 - (id)scriptingInfoWithChildren;	// the struct info of the view's children
